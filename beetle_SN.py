@@ -9,7 +9,7 @@
 # https://code.tutsplus.com/tutorials/counting-word-frequency-in-a-file-using-python--cms-25965
 # https://stackoverflow.com/questions/20510768/count-frequency-of-words-in-a-list-and-sort-by-frequency
 # https://stackoverflow.com/questions/20304824/sort-dict-by-highest-value
-
+# https://stackoverflow.com/questions/11941817/how-to-avoid-runtimeerror-dictionary-changed-size-during-iteration-error
 
 import itertools
 import re
