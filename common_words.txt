@@ -175,3 +175,7 @@ working
 issues
 added
 team
+work_notes
+short_description
+description
+close_notes
