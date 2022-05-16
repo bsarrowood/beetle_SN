@@ -2,7 +2,7 @@
 # Created on:       2022.05.09
 # Last updated:     2022.05.16
 # Script name:      beetle_SN.py
-# Description:      script to return top 20 for word frequency count of a file, less common words
+# Description:      script to return top 50 for word frequency count of a file, less common words
 #
 # References:
 # https://en.wikipedia.org/wiki/Most_common_words_in_English
@@ -17,7 +17,6 @@
 import itertools                                # slice and dice to pull the top results from the dic
 import matplotlib.pyplot as plt                 # for graphically ploting the results
 import re                                       # the regular expression snyax for finding all the words and dividing them up
-from os import system, name                     # pulling info before using appropriate syntax to clear the screen
 from wordcloud import WordCloud                 # to convert results into a word cloud
 
 common_words = []                               # for the common words pulled from the related file
@@ -29,13 +28,6 @@ N_top = 50                                      # how many of the most frequent 
 sorted_report = {}                              # dic of filtered and high-to-low value sorted words and frequency counts
 word_report = {}                                # dic of all the words and frequency counts before filtering
 
-def clear():
-    # for windows
-    if name =='nt':
-        _ = system('cls')
-    # for linux & mac (here, os.name is 'posix')
-    else:
-        _ = system('clear')
 
 def data_pull():
     # this opens the data dump file and pulls the info to be processed before closing the file
@@ -92,17 +84,14 @@ def word_cloud(filtered_report):
     # here we are setting the parameters for creating the word cloud
     # we then create the word cloud from the filtered dic and output/display the resulting image
     # we can change this to auto-create an image export of the results if wanted at a later time
-    wc = WordCloud(background_color='white', width=2000, height=1000, relative_scaling=0.5, normalize_plurals=False).generate_from_frequencies(filtered_report)
+    wc = WordCloud(background_color='white', width=1000, height=500, relative_scaling=0.5, normalize_plurals=False).generate_from_frequencies(filtered_report)
     plt.figure(figsize=(15,8))
     plt.imshow(wc)
     plt.axis('off')
-    plt.show()
-
-    img = wc.to_image()
-    img.show
+    #plt.show()
+    plt.savefig('figure_1.png', format='png')
 
 
-clear()
 match_pattern = data_pull()
 word_report = data_count(match_pattern)
 filtered_report = data_filter(word_report)
