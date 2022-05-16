@@ -1,6 +1,6 @@
 # Created by:       Brad Arrowood
 # Created on:       2022.05.09
-# Last updated:     2022.05.12
+# Last updated:     2022.05.16
 # Script name:      beetle_SN.py
 # Description:      script to return top 20 for word frequency count of a file, less common words
 #
@@ -22,9 +22,8 @@ file_INC_data_dump = 'data_dump.txt'        # txt file of the INC tickets to sea
 frequency = {}                              # for the number of instances a word is used
 N_filter = 5                                # remove any words with under this number of instances
 N_top = 20                                  # how many of the most frequent words to display
-sorted_report = {}                          # to have a high-to-low value sorted dic
-temp_report = {}                            # a pass thru dic from one func to another
-word_report = {}                            
+sorted_report = {}                          # dic of filtered and high-to-low value sorted words and frequency counts
+word_report = {}                            # dic of all the words and frequency counts before filtering
 
 
 def clear():
