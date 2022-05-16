@@ -13,8 +13,7 @@
 
 import itertools
 import re
-import string
-from os import system, name
+from os import system, name                 # pulling info before using appropriate syntax to clear the screen
 
 common_words = []                           # for the common words pulled from the related file
 file_common_words = 'common_words.txt'      # txt file with a list of common words to filter with
@@ -77,7 +76,6 @@ def data_filter(word_report):
             for k in list(sorted_report):
                 if k == w.rstrip():
                     sorted_report.pop(k)
-#            print(w.rstrip())
 
     return sorted_report
 
