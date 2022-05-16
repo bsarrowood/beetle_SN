@@ -87,8 +87,8 @@ def data_filter(word_report):
     return filtered_report
 
 def word_cloud(filtered_report):
-    #wc = WordCloud(background_color='white', width=1000, height=500,relative_scaling=0.5,normalize_plurals=False).generate_from_frequencies(filtered_report)
-    wc = WordCloud(background_color='white', width=2000, height=1000).generate_from_frequencies(filtered_report)
+    wc = WordCloud(background_color='white', width=2000, height=1000,relative_scaling=0.5,normalize_plurals=False).generate_from_frequencies(filtered_report)
+    #wc = WordCloud(background_color='white', width=2000, height=1000).generate_from_frequencies(filtered_report)
     plt.figure(figsize=(15,8))
     plt.imshow(wc)
     plt.axis('off')
@@ -102,7 +102,8 @@ def word_cloud(filtered_report):
 match_pattern = data_pull()
 word_report = data_count(match_pattern)
 filtered_report = data_filter(word_report)
-word_cloud(filtered_report)
 
-#for i in out:
-#    print(i,out[i])
+#for i in filtered_report:
+#    print(i,filtered_report[i])
+
+word_cloud(filtered_report)
