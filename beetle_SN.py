@@ -14,21 +14,20 @@
 # https://predictivehacks.com/?all-tips=how-to-create-word-clouds-from-dictionaries
 # https://www.datacamp.com/tutorial/wordcloud-python
 
-import itertools
-import matplotlib.pyplot as plt
-import re
-from os import system, name                 # pulling info before using appropriate syntax to clear the screen
-from wordcloud import WordCloud
+import itertools                                # slice and dice to pull the top results from the dic
+import matplotlib.pyplot as plt                 # for graphically ploting the results
+import re                                       # the regular expression snyax for finding all the words and dividing them up
+from os import system, name                     # pulling info before using appropriate syntax to clear the screen
+from wordcloud import WordCloud                 # to convert results into a word cloud
 
-common_words = []                           # for the common words pulled from the related file
-file_common_words = 'common_words.txt'      # txt file with a list of common words to filter with
-file_INC_data_dump = 'data_dump.txt'        # txt file of the INC tickets to search through
-frequency = {}                              # for the number of instances a word is used
-N_filter = 5                                # remove any words with under this number of instances
-N_top = 50                                  # how many of the most frequent words to display
-sorted_report = {}                          # dic of filtered and high-to-low value sorted words and frequency counts
-word_report = {}                            # dic of all the words and frequency counts before filtering
-
+common_words = []                               # for the common words pulled from the related file
+file_common_words = 'common_words.txt'          # txt file with a list of common words to filter with
+file_INC_data_dump = 'data_dump.txt'            # txt file of the INC tickets to search through
+frequency = {}                                  # for the number of instances a word is used
+N_filter = 5                                    # remove any words with under this number of instances
+N_top = 50                                      # how many of the most frequent words to display
+sorted_report = {}                              # dic of filtered and high-to-low value sorted words and frequency counts
+word_report = {}                                # dic of all the words and frequency counts before filtering
 
 def clear():
     # for windows
@@ -64,7 +63,10 @@ def data_count(match_pattern):
     return word_report
 
 def data_filter(word_report):
-    # this checks temp_report for values 5 or higher to then add the key:value to a new dic
+    # this checks word_report for values at a specific amount or lower to remove those key:value from the dic
+    # the func then sorts the dic by pulling all the keys into a list, ordering them, 
+    #   then reordering the dic based off the sorted list to make the sorted dic
+    # finally from the sorted dic the top specific number of results are pulled and returned
     for k,v in list(word_report.items()):
         if v <= N_filter:
             word_report.pop(k)
@@ -87,8 +89,10 @@ def data_filter(word_report):
     return filtered_report
 
 def word_cloud(filtered_report):
-    wc = WordCloud(background_color='white', width=2000, height=1000,relative_scaling=0.5,normalize_plurals=False).generate_from_frequencies(filtered_report)
-    #wc = WordCloud(background_color='white', width=2000, height=1000).generate_from_frequencies(filtered_report)
+    # here we are setting the parameters for creating the word cloud
+    # we then create the word cloud from the filtered dic and output/display the resulting image
+    # we can change this to auto-create an image export of the results if wanted at a later time
+    wc = WordCloud(background_color='white', width=2000, height=1000, relative_scaling=0.5, normalize_plurals=False).generate_from_frequencies(filtered_report)
     plt.figure(figsize=(15,8))
     plt.imshow(wc)
     plt.axis('off')
@@ -98,11 +102,12 @@ def word_cloud(filtered_report):
     img.show
 
 
-#clear()
+clear()
 match_pattern = data_pull()
 word_report = data_count(match_pattern)
 filtered_report = data_filter(word_report)
 
+# was used for printing each result and frequency count line by line
 #for i in filtered_report:
 #    print(i,filtered_report[i])
 
