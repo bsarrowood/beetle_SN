@@ -20,19 +20,23 @@
 
 import itertools
 from time import sleep                                # slice and dice to pull the top results from the dic
-from tkinter import filedialog                  # for prompting user which files to be compared
+from tkinter import filedialog
+from venv import create                  # for prompting user which files to be compared
 import matplotlib.pyplot as plt                 # for graphically ploting the results
+#import numpy as np
+#import pandas as pd
 import re                                       # the regular expression snyax for finding all the words and dividing them up
 import tkinter                                  # used to ask user to select each file to be compared
 from datetime import date,datetime,timedelta    # used to create unique date stamp for file name
-from os import system, name                     # used to pull os info for clearing the screen
+from os import system, name, path               # used to pull os info for clearing the screen and checking path
+#from PIL import Image
 from wordcloud import WordCloud                 # to convert results into a word cloud
 
 common_words = []                               # for the common words pulled from the related file
 file_common_words = 'common_words.txt'          # txt file with a list of common words to filter with
 frequency = {}                                  # dic of the words and the number of instances a word is used
-N_filter = 5                                    # remove any words with under this number of instances; currently not used
-N_top = 100                                      # how many of the most frequent words to display
+N_filter = 0                                    # remove any words with under this number of instances; currently not used
+N_top = 250                                     # how many of the most frequent words to display
 match_pattern = []                              # list of all words pulled from file
 frequency_list = []                             # list of the frequency for each of the words
 filtered_report = {}                            # dic of final pass for filtered, high-to-low value sorted words and frequency counts
@@ -48,27 +52,44 @@ def clear():
     else:
         _ = system('clear')
 
-def get_file(run_count):
+def get_file():
     
-    if run_count == 1:
-        print('Please select the file with the newest info....')
-    elif run_count == 2:
-        print('Please select the file with the older info....')
+    run_count = 1
     
-    tkinter.Tk().withdraw()
+    while run_count < 3:
+        if run_count == 1:
+            print('Please select the file with the newest data set....')
+            
+            tkinter.Tk().withdraw()
 
-    file_INC_data_set = filedialog.askopenfilename(filetypes= [
-        ('txt files', '*.txt'),
-        ('csv file', '*.csv'),
-        ('json file', '*.json'),
-    ])
+            file_INC_data_set_NEW = filedialog.askopenfilename(filetypes= [
+                ('txt files', '*.txt'),
+                ('csv file', '*.csv'),
+                ('json file', '*.json'),
+            ])
+            run_count = run_count + 1
+        elif run_count == 2:
+            print('Please select the file with the older data set....')
 
-    print('Processing....')
-    match_pattern = data_pull(file_INC_data_set)
-    word_report = data_count(match_pattern)
-    filtered_report = data_filter(word_report)
+            tkinter.Tk().withdraw()
 
-    return filtered_report
+            file_INC_data_set_OLD = filedialog.askopenfilename(filetypes= [
+                ('txt files', '*.txt'),
+                ('csv file', '*.csv'),
+                ('json file', '*.json'),
+            ])
+            run_count = run_count + 1
+
+    print('Processing each data set....')
+    match_pattern_NEW = data_pull(file_INC_data_set_NEW)
+    word_report_NEW = data_count(match_pattern_NEW)
+    filtered_report_NEW = data_filter(word_report_NEW)
+
+    match_pattern_OLD = data_pull(file_INC_data_set_OLD)
+    word_report_OLD = data_count(match_pattern_OLD)
+    filtered_report_OLD = data_filter(word_report_OLD)
+
+    return filtered_report_NEW, filtered_report_OLD
 
 def data_pull(file_INC_data_set):
     # this opens the data dump file and pulls the info to be processed before closing the file
@@ -83,7 +104,7 @@ def data_pull(file_INC_data_set):
     document_text.close()
     
     match_pattern = re.findall(r'\b[a-z]{3,15}\b', text_string)
-    print('Total word count:      ' + str(len(match_pattern)))
+    #print('Total word count:      ' + str(len(match_pattern)))
     
     return match_pattern
 
@@ -104,11 +125,14 @@ def data_count(match_pattern):
     for words in frequency_list:
         word_report[words] = frequency[words]
     
-    print('Total unique words:   ', len(word_report))
+    #print('Total unique words:   ', len(word_report))
 
     return word_report
 
 def high_low(word_report):
+    # pulled this to be a func since using it twice in the script
+    # sorts a dic from high  to low based on the values
+    # then returns the results
     i = ''
     k = ''
     sorted_report = {}
@@ -122,19 +146,11 @@ def high_low(word_report):
     return sorted_report
 
 def data_filter(word_report):
-    # this checks word_report for values at a specific amount or lower to remove those key:value from the dic
-    # the func then sorts the dic by pulling all the keys into a list, ordering them, 
+    # the func sorts the dic by pulling all the keys into a list, ordering them, 
     #   then reordering the dic based off the sorted list to make the sorted dic
     # finally from the sorted dic the top specific number of results are pulled and returned
     k = ''
     w = ''
-    filtered_report = {}
-    words_removed = 0
-
-    # commenting this out to keep all words to be compared between data sets
-    #for k,v in list(word_report.items()):
-    #    if v <= N_filter:
-    #        word_report.pop(k)
 
     sorted_report = high_low(word_report)
 
@@ -145,20 +161,19 @@ def data_filter(word_report):
                 if k == w.rstrip():
                     sorted_report.pop(k)
     
-    words_removed = int(len(word_report)) - int(len(sorted_report))
-    print('Common words removed: ', words_removed, '\n')
-    
-    # moving this to word cloud func
-    #filtered_report = dict(itertools.islice(sorted_report.items(), N_top))
-
     return sorted_report
 
 def compare_reports(filtered_report_NEW,filtered_report_OLD):
     # this func is for comparing the new and old data sets and calc their differences
-    # with the calc result being added to a new dic which will be returned
+    #   with the calc result being added to a new dic 
+    # it then checks for all values equal to or below 0 to remove those key:value from the dic
+    # the reduced dic is then returned
+    
     k = ''
+    v = ''
     diff_report = {}
 
+    print('Comparing data sets....')
     for k in filtered_report_NEW:
         if k in filtered_report_OLD:
             difference = filtered_report_NEW[k] - filtered_report_OLD[k]
@@ -166,7 +181,19 @@ def compare_reports(filtered_report_NEW,filtered_report_OLD):
     
     diff_report = high_low(diff_report)
 
+    for k,v in list(diff_report.items()):
+        if v <= N_filter:
+            diff_report.pop(k)
+
     return diff_report
+
+def create_uniqueID():
+    uniqueID_DATE = date.today() - timedelta(0)
+    now = datetime.now()
+    uniqueID_TIME = now.strftime('%H%M%S')
+    uniqueID = str(uniqueID_DATE) + '_' + str(uniqueID_TIME)
+
+    return uniqueID
 
 def word_cloud(passed_report):
     # first we create a unique ID based on the YYYY-MM-DD to be used for the file name
@@ -174,13 +201,11 @@ def word_cloud(passed_report):
     # next we create the word cloud from the filtered dic and, formally, output/display the resulting image
     #   we set the background color, width, height, scaling, and made plural words combined
     # finally, we changed the code to not display result but instead auto-create an image export of the results
-    uniqueID_DATE = date.today() - timedelta(0)
-    now = datetime.now()
-    uniqueID_TIME = now.strftime('%H%M%S')
-    uniqueID = str(uniqueID_DATE) + '_' + str(uniqueID_TIME)
 
+    uniqueID = create_uniqueID()    
     final_report = dict(itertools.islice(passed_report.items(), N_top))
 
+    print('Exporting word cloud image....')
     wc = WordCloud(background_color='white', width=1000, height=500, relative_scaling=0.5, normalize_plurals=True).generate_from_frequencies(final_report)
     plt.figure(figsize=(15,8))
     plt.imshow(wc)
@@ -188,8 +213,24 @@ def word_cloud(passed_report):
     #plt.show()
     plt.savefig(str(uniqueID) + '_wordcloud.png', format='png')
 
-def bar_chart():
-    print('Placeholder')
+def bar_chart(passed_report):
+    uniqueID = create_uniqueID()
+    print('Creating bar chart image....')
+
+    final_report = dict(itertools.islice(passed_report.items(), N_top))
+    keys = final_report.keys()
+    values = final_report.values()
+
+    plt.figure(figsize=(50,30))
+    #fig = plt.figure(figsize=(500,200))
+    #fig.subplots_adjust(bottom=0.500)
+    plt.axis('on')
+    plt.xticks(rotation = 67)
+    plt.bar(keys,values)
+
+    plt.tight_layout()
+    plt.savefig(str(uniqueID) + '_bar_chart.png', format='png')
+    #plt.show()
 
 def main():
     # first we prompt the user for the newest data file
@@ -199,19 +240,11 @@ def main():
     # then we'll hand both processed data sets to the func to be compared
     # the returned data will be handed off to create chart graph and exported as a PNG word cloud
     clear()
-    filtered_report_NEW = get_file(1)
-    filtered_report_OLD = get_file(2)
+    filtered_report_NEW,filtered_report_OLD = get_file()
     compared_report = compare_reports(filtered_report_NEW,filtered_report_OLD)
-    word_cloud(compared_report)
-
-    # this will need to be moved down further after 2 data lists have run, sorted, and filtered
-    # we'll then need to compare the 2 filtered reports to check for differences
-    # we can then create 2 export reports: 
-    #   1) A bar chart showing which words have become more-to-less frequent
-    #   2) A word cloud of the highest 10/20/50/100 uptrend in word freqency
-    #word_cloud(filtered_report_NEW)
+    bar_chart(compared_report)
     #sleep(1)
-    #word_cloud(filtered_report_OLD)
+    #word_cloud(compared_report)
 
 
 if __name__ == '__main__':
