@@ -1,8 +1,8 @@
 # Created by:       Brad Arrowood
 # Created on:       2022.05.09
-# Last updated:     2022.05.17
+# Last updated:     2022.05.18
 # Script name:      beetle_SN.py
-# Description:      script to return top 50 for word frequency count of a file, less common words
+# Description:      script to return top 500 for word frequency count of a file, less common words
 #
 # References:
 # https://en.wikipedia.org/wiki/Most_common_words_in_English
@@ -18,25 +18,21 @@
 # https://www.programiz.com/python-programming/datetime/current-time
 
 
-import itertools
-from time import sleep                                # slice and dice to pull the top results from the dic
-from tkinter import filedialog
-from venv import create                  # for prompting user which files to be compared
+import itertools                                # slice and dice to pull the top results from the dic
+from time import sleep                          # used to add a pause
+from tkinter import filedialog                  # for prompting user which files to be compared
 import matplotlib.pyplot as plt                 # for graphically ploting the results
-#import numpy as np
-#import pandas as pd
 import re                                       # the regular expression snyax for finding all the words and dividing them up
 import tkinter                                  # used to ask user to select each file to be compared
 from datetime import date,datetime,timedelta    # used to create unique date stamp for file name
 from os import system, name, path               # used to pull os info for clearing the screen and checking path
-#from PIL import Image
 from wordcloud import WordCloud                 # to convert results into a word cloud
 
 common_words = []                               # for the common words pulled from the related file
 file_common_words = 'common_words.txt'          # txt file with a list of common words to filter with
 frequency = {}                                  # dic of the words and the number of instances a word is used
 N_filter = 0                                    # remove any words with under this number of instances; currently not used
-N_top = 250                                     # how many of the most frequent words to display
+N_top = 500                                     # how many of the most frequent words to display
 match_pattern = []                              # list of all words pulled from file
 frequency_list = []                             # list of the frequency for each of the words
 filtered_report = {}                            # dic of final pass for filtered, high-to-low value sorted words and frequency counts
@@ -222,11 +218,12 @@ def bar_chart(passed_report):
     values = final_report.values()
 
     plt.figure(figsize=(50,30))
+    plt.bar(keys,values)
     #fig = plt.figure(figsize=(500,200))
     #fig.subplots_adjust(bottom=0.500)
     plt.axis('on')
-    plt.xticks(rotation = 67)
-    plt.bar(keys,values)
+    plt.xticks(rotation = 85)
+    
 
     plt.tight_layout()
     plt.savefig(str(uniqueID) + '_bar_chart.png', format='png')
@@ -243,8 +240,8 @@ def main():
     filtered_report_NEW,filtered_report_OLD = get_file()
     compared_report = compare_reports(filtered_report_NEW,filtered_report_OLD)
     bar_chart(compared_report)
-    #sleep(1)
-    #word_cloud(compared_report)
+    sleep(1)
+    word_cloud(compared_report)
 
 
 if __name__ == '__main__':
