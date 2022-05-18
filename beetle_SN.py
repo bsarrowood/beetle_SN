@@ -35,7 +35,7 @@ common_words = []                               # for the common words pulled fr
 file_common_words = 'common_words.txt'          # txt file with a list of common words to filter with
 frequency = {}                                  # dic of the words and the number of instances a word is used
 N_filter = 0                                    # remove any words with under this number of instances; currently not used
-N_top = 500                                     # how many of the most frequent words to display
+N_top = 5000                                    # how many of the most frequent words to display
 match_pattern = []                              # list of all words pulled from file
 frequency_list = []                             # list of the frequency for each of the words
 filtered_report = {}                            # dic of final pass for filtered, high-to-low value sorted words and frequency counts
@@ -209,28 +209,24 @@ def word_cloud(passed_report):
     plt.figure(figsize=(15,8))
     plt.imshow(wc)
     plt.axis('off')
-    #plt.show()
     plt.savefig(str(uniqueID) + '_wordcloud.png', format='png')
 
 def bar_chart(passed_report):
     uniqueID = create_uniqueID()
     print('Creating bar chart image....')
 
-    final_report = dict(itertools.islice(passed_report.items(), N_top))
+    words_over_zero = len(passed_report)
+    final_report = dict(itertools.islice(passed_report.items(), words_over_zero))
     keys = final_report.keys()
     values = final_report.values()
 
-    plt.figure(figsize=(50,30))
+    plt.figure(figsize=(500,50))
     plt.bar(keys,values)
-    #fig = plt.figure(figsize=(500,200))
-    #fig.subplots_adjust(bottom=0.500)
     plt.axis('on')
     plt.xticks(rotation = 85)
-    
 
     plt.tight_layout()
     plt.savefig(str(uniqueID) + '_bar_chart.png', format='png')
-    #plt.show()
 
 def main():
     # first we prompt the user for the newest data file
