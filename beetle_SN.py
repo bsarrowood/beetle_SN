@@ -4,6 +4,9 @@
 # Script name:      beetle_SN.py
 # Description:      script to return top 500 for word frequency count of a file, less common words
 #
+# Libraries Req.:   matplotlib
+#                   wordcloud
+#
 # References:
 # https://en.wikipedia.org/wiki/Most_common_words_in_English
 # https://code.tutsplus.com/tutorials/counting-word-frequency-in-a-file-using-python--cms-25965
