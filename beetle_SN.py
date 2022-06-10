@@ -2,7 +2,7 @@
 # Created on:       2022.05.09
 # Last updated:     2022.06.10
 # Script name:      beetle_SN.py
-# Description:      script to return top 5,000 for word frequency count of a file, less common words
+# Description:      script to return top 500 for word frequency count of a file, less common words
 #
 # Libraries Req.:   matplotlib
 #                   wordcloud
