@@ -1,6 +1,6 @@
 # Created by:       Brad Arrowood
 # Created on:       2022.05.09
-# Last updated:     2022.05.19
+# Last updated:     2022.06.10
 # Script name:      beetle_SN.py
 # Description:      script to return top 5,000 for word frequency count of a file, less common words
 #
@@ -32,10 +32,12 @@ from os import system, name, path               # used to pull os info for clear
 from wordcloud import WordCloud                 # to convert results into a word cloud
 
 common_words = []                               # for the common words pulled from the related file
+bar_chart_height = 15                           # size of chart height in inches
+bar_chart_width = 20                            # size is chart width in inches
 file_common_words = 'common_words.txt'          # txt file with a list of common words to filter with
 frequency = {}                                  # dic of the words and the number of instances a word is used
-N_filter = 0                                    # remove any words with under this number of instances; currently not used
-N_top = 5000                                    # how many of the most frequent words to display
+N_filter = 15                                   # remove any words with under this number of instances; currently not used
+N_top = 500                                     # how many of the most frequent words to display
 match_pattern = []                              # list of all words pulled from file
 frequency_list = []                             # list of the frequency for each of the words
 filtered_report = {}                            # dic of final pass for filtered, high-to-low value sorted words and frequency counts
@@ -220,7 +222,7 @@ def bar_chart(passed_report):
     keys = final_report.keys()
     values = final_report.values()
 
-    plt.figure(figsize=(500,50))
+    plt.figure(figsize=(bar_chart_width,bar_chart_height))
     plt.bar(keys,values)
     plt.axis('on')
     plt.xticks(rotation = 85)
@@ -236,8 +238,8 @@ def main():
     # then we'll hand both processed data sets to the func to be compared
     # the returned data will be handed off to create chart graph and exported as a PNG word cloud
     clear()
-    filtered_report_NEW,filtered_report_OLD = get_file()
-    compared_report = compare_reports(filtered_report_NEW,filtered_report_OLD)
+    filtered_report_NEW, filtered_report_OLD = get_file()
+    compared_report = compare_reports(filtered_report_NEW, filtered_report_OLD)
     bar_chart(compared_report)
     sleep(1)
     word_cloud(compared_report)
